@@ -1,4 +1,4 @@
-import {v4 as uuidV4} from "uuid";
+import { v4 as uuidV4 } from "uuid";
 
 type Task = { id: string, title: string, completed: boolean, createdAt: Date }
 const list = document.querySelector<HTMLUListElement>("#list");
@@ -24,13 +24,18 @@ function addListItem(task: Task) {
     const item = document.createElement("li");
     const label = document.createElement("label");
     const checkbox = document.createElement("input");
+    const deleteButton = document.createElement("button");
+    deleteButton.id = task.id;
+    deleteButton.innerText = "delete";
+    deleteButton.onclick = removeTask
     checkbox.addEventListener("change", () => {
         task.completed = checkbox.checked;
         saveTask();
     })
     checkbox.type = "checkbox";
     checkbox.checked = task.completed;
-    label.append(checkbox, task.title);
+
+    label.append(checkbox, task.title, " ", deleteButton);
     item.append(label);
     list?.append(item);
 }
@@ -38,8 +43,14 @@ function addListItem(task: Task) {
 function saveTask() {
     localStorage.setItem("TASKS", JSON.stringify(tasks));
 }
-function loadTasks():Task[]{
+function loadTasks(): Task[] {
     const taskJson = localStorage.getItem("TASKS")
-    if(taskJson==null) return [];
+    if (taskJson == null) return [];
     return JSON.parse(taskJson);
+}
+
+function removeTask(e: any) {
+    document.getElementById(e.target.id)?.parentElement?.remove()
+    const deletedtask = tasks.filter((task) => task.id !== e.target.id);
+    localStorage.setItem("TASKS", JSON.stringify(deletedtask));
 }
