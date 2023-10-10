@@ -49,8 +49,9 @@ function loadTasks(): Task[] {
     return JSON.parse(taskJson);
 }
 
-function removeTask(e: any) {
-    document.getElementById(e.target.id)?.parentElement?.remove()
-    const deletedtask = tasks.filter((task) => task.id !== e.target.id);
+function removeTask(e: Event) {
+    const target = e.target as HTMLButtonElement;
+    document.getElementById(target.id)?.parentElement?.remove();
+    const deletedtask = tasks.filter((task) => task.id !== target.id);
     localStorage.setItem("TASKS", JSON.stringify(deletedtask));
 }
