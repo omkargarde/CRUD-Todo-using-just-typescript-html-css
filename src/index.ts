@@ -40,6 +40,7 @@ function addListItem(task: Task) {
   label.append(checkbox, task.title, " ", deleteButton, " ", editButton);
   item.append(label);
   list?.append(item);
+  saveTask();
 }
 
 function saveTask() {
