@@ -19,15 +19,17 @@ form?.addEventListener("submit", (e) => {
   addListItem(newTask);
   input.value = "";
 });
-
 function addListItem(task: Task) {
   const item = document.createElement("li");
   const label = document.createElement("label");
   const checkbox = document.createElement("input");
   const deleteButton = document.createElement("button");
-  deleteButton.id = task.id;
-  deleteButton.innerText = "delete";
+  const editButton = document.createElement("button");
+
+  item.id = task.id;
+  deleteButton.innerText = "Delete";
   deleteButton.onclick = removeTask;
+
   checkbox.addEventListener("change", () => {
     task.completed = checkbox.checked;
     saveTask();
@@ -35,7 +37,7 @@ function addListItem(task: Task) {
   checkbox.type = "checkbox";
   checkbox.checked = task.completed;
 
-  label.append(checkbox, task.title, " ", deleteButton);
+  label.append(checkbox, task.title, " ", deleteButton, " ", editButton);
   item.append(label);
   list?.append(item);
 }
@@ -43,16 +45,20 @@ function addListItem(task: Task) {
 function saveTask() {
   localStorage.setItem("TASKS", JSON.stringify(tasks));
 }
+
 function loadTasks(): Task[] {
   const taskJson = localStorage.getItem("TASKS");
-  if (taskJson == null) return [];
-  return JSON.parse(taskJson);
+  return taskJson ? JSON.parse(taskJson) : [];
 }
 
 function removeTask(e: Event) {
   const target = e.target as HTMLButtonElement;
-  document.getElementById(target.id)?.parentElement?.remove();
-  const deleteTask = tasks.filter((task) => task.id !== target.id);
-  localStorage.setItem("TASKS", JSON.stringify(deleteTask));
+  const id = target.parentElement?.parentElement?.id;
+  if (id == null) return;
+  document.getElementById(id)?.remove();
+  const deleteTaskIndex = tasks.findIndex((task) => task.id === id);
+  if (deleteTaskIndex !== -1) {
+    tasks.splice(deleteTaskIndex, 1);
+  }
+  localStorage.setItem("TASKS", JSON.stringify(tasks));
 }
-
