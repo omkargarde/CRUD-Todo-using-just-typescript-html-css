@@ -1,6 +1,7 @@
 import { v4 as uuidV4 } from "uuid";
+import { saveTask } from "./test";
+import { Task } from "./types";
 
-type Task = { id: string; title: string; completed: boolean; createdAt: Date };
 const list = document.querySelector<HTMLUListElement>("#list");
 const form = document.querySelector<HTMLFormElement>("#new-task-form");
 const input = document.querySelector<HTMLInputElement>("#new-task-title");
@@ -34,7 +35,7 @@ function addListItem(task: Task) {
 
   checkbox.addEventListener("change", () => {
     task.completed = checkbox.checked;
-    saveTask();
+    saveTask(tasks);
   });
   checkbox.type = "checkbox";
   checkbox.checked = task.completed;
@@ -42,11 +43,7 @@ function addListItem(task: Task) {
   label.append(checkbox, task.title, " ", deleteButton, " ", editButton);
   item.append(label);
   list?.append(item);
-  saveTask();
-}
-
-function saveTask() {
-  localStorage.setItem("TASKS", JSON.stringify(tasks));
+  saveTask(tasks);
 }
 
 function loadTasks(): Task[] {
@@ -69,23 +66,33 @@ function removeTask(e: Event) {
 function editTask(e: Event) {
   const target = e.target as HTMLButtonElement;
   const id = target.parentElement?.parentElement?.id;
-
-  if (id == null) return;
-
-  const taskIndex = tasks.findIndex((task) => task.id === id);
-  if (taskIndex === -1) return;
-
+  if (!id) return;
+  const deleteTaskIndex = tasks.findIndex((task) => task.id === id);
+  if (deleteTaskIndex === -1) return;
   const inputValue = input?.value;
-  if (!inputValue) return;
+  if (!inputValue || inputValue == "") return;
+  const editedTask = { ...tasks[deleteTaskIndex], title: inputValue };
+  tasks.splice(deleteTaskIndex, 1, editedTask);
 
-  const editedTask = {
-    ...tasks[taskIndex],
-    title: inputValue,
-  };
+  const item = document.createElement("li");
+  const label = document.createElement("label");
+  const checkbox = document.createElement("input");
+  const deleteButton = document.createElement("button");
+  const editButton = document.createElement("button");
 
-  tasks.splice(taskIndex, 1, editedTask);
-  console.log(tasks);
+  deleteButton.innerText = "Delete";
+  deleteButton.onclick = removeTask;
+  editButton.innerText = "Edit";
+  editButton.onclick = editTask;
 
+  item.id = editedTask.id;
+  checkbox.type = "checkbox";
+  checkbox.checked = editedTask.completed;
+
+  label.append(checkbox, editedTask.title, " ", deleteButton, " ", editButton);
+  item.append(label);
+  document.getElementById(id)?.replaceChildren(item);
   input.value = "";
+
   localStorage.setItem("TASKS", JSON.stringify(tasks));
 }
