@@ -9,11 +9,17 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "@eslint/js": "^9.20.0",
+    "@types/bun": "latest",
+    "eslint": "^9.20.1",
+    "globals": "^15.15.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^4.5.9"
   },
   "dependencies": {
-    "@types/uuid": "^9.0.5",
+    "@types/uuid": "^9.0.8",
     "uuid": "^9.0.1"
-  }
+  },
+  "module": "index.ts"
 }
