@@ -67,12 +67,18 @@ function editTask(e: Event) {
   const target = e.target as HTMLButtonElement;
   const id = target.parentElement?.parentElement?.id;
   if (!id) return;
-  const deleteTaskIndex = tasks.findIndex((task) => task.id === id);
-  if (deleteTaskIndex === -1) return;
-  const inputValue = input?.value;
-  if (!inputValue || inputValue == "") return;
-  const editedTask = { ...tasks[deleteTaskIndex], title: inputValue };
-  tasks.splice(deleteTaskIndex, 1, editedTask);
+  const TaskToBeEditedIndex = tasks.findIndex((task) => task.id === id);
+  if (TaskToBeEditedIndex === -1) return;
+  const inputValue = window.prompt("Enter new task", undefined);
+  if (!inputValue) {
+    console.error("Input value is empty");
+    return;
+  }
+  const editedTask = {
+    ...tasks[TaskToBeEditedIndex],
+    title: inputValue,
+  };
+  tasks.splice(TaskToBeEditedIndex, 1, editedTask);
 
   const item = document.createElement("li");
   const label = document.createElement("label");
@@ -92,7 +98,5 @@ function editTask(e: Event) {
   label.append(checkbox, editedTask.title, " ", deleteButton, " ", editButton);
   item.append(label);
   document.getElementById(id)?.replaceChildren(item);
-  input.value = "";
-
   localStorage.setItem("TASKS", JSON.stringify(tasks));
 }
